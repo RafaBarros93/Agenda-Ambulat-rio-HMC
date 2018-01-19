@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Calendário</title> 
+
+<meta charset='utf-8' />
+<link rel='stylesheet' href='../lib/cupertino/jquery-ui.min.css' />
+<link href='../fullcalendar.css' rel='stylesheet' />
+<link href='../fullcalendar.print.css' rel='stylesheet' media='print' />
+<link rel="icon" href="\teste\image\hmc.png" type="image/png" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"/>
+<link href="css/bot.css" rel="stylesheet"> 
+<link href="css/sig.css" rel="stylesheet">
+<script src='../lib/moment.min.js'></script>
+<script src='../lib/jquery.min.js'></script>
+<script src='../fullcalendar.min.js'></script>
+<script src='../lang-all.js'></script>
+<script>
+
+	$(document).ready(function() {
+		var currentLangCode = 'pt-br';
+
+		// build the language selector's options
+		$.each($.fullCalendar.langs, function(langCode) {
+			$('#lang-selector').append(
+				$('<option/>')
+					.attr('value', langCode)
+					.prop('selected', langCode == currentLangCode)
+					.text(langCode)
+			);
+		});
+
+		// rerender the calendar when the selected option changes
+		$('#lang-selector').on('change', function() {
+			if (this.value) {
+				currentLangCode = this.value;
+				$('#calendar').fullCalendar('destroy');
+				renderCalendar();
+			}
+		});
+
+		function renderCalendar() {
+			var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "POST", "../../../pesquisaConsultaCalendario.php", false ); 
+		    xmlHttp.send(null);
+
+
+
+			$('#calendar').fullCalendar({
+				header: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'month,agendaWeek,agendaDay'
+				},
+				defaultDate: '2017-11-3',
+				lang: currentLangCode,
+				buttonIcons: false, // show the prev/next text
+				weekNumbers: true,
+				selectable: true,
+				selectHelper: true,
+			select: function(start, end) {
+				var title = prompt('Consultas:');
+				var eventData;
+				if (title) {
+					eventData = {
+						title: title,
+						start: start,
+						end: end
+					};
+					$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
+
+					
+				}
+				$('#calendar').fullCalendar('unselect');
+			},
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+				events: "/teste/pesquisaConsultaCalendario.php"
+/*
+				[
+					{
+						title: 'All Day Event',
+						start: '2015-02-01'
+					},
+					{
+						title: 'Long Event',
+						start: '2015-02-07',
+						end: '2015-02-10'
+					},
+					{
+						id: 999,
+						title: 'Repeating Event',
+						start: '2017-11-09T16:00:00'
+					},
+					{
+						id: 999,
+						title: 'Repeating Event',
+						start: '2017-11-08T17:00:00'
+					},
+					{
+						title: 'Conference',
+						start: '2015-02-11',
+						end: '2015-02-13'
+					},
+					{
+						title: 'Meeting',
+						start: '2015-02-12T10:30:00',
+						end: '2015-02-12T12:30:00'
+					},
+					{
+						title: 'Lunch',
+						start: '2015-02-12T12:00:00'
+					},
+					{
+						title: 'Meeting',
+						start: '2015-02-12T14:30:00'
+					},
+					{
+						title: 'Happy Hour',
+						start: '2015-02-12T17:30:00'
+					},
+					{
+						title: 'Dinner',
+						start: '2015-02-12T20:00:00'
+					},
+					{
+						title: 'Birthday Party',
+						start: '2015-02-13T07:00:00'
+					},
+					{
+						title: 'Click for Google',
+						url: 'http://google.com/',
+						start: '2015-02-28'
+					},
+					
+				
+				]*/
+			});
+		}
+
+		renderCalendar();
+	});
+
+</script>
+<style>
+
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#top {
+		background: #eee;
+		border-bottom: 1px solid #ddd;
+		padding: 0 10px;
+		line-height: 40px;
+		font-size: 12px;
+	}
+
+	#calendar {
+		max-width: 900px;
+		margin: 40px auto;
+		padding: 0 10px;
+	}
+
+</style>
+</head>
+<body>
+     
+		<br><input type='button'   value='Voltar' onClick='history.go(-1)''></br>
+        
+         <h1><center>Calendário de consultas médicas</center></h1>  
+        <h1><center>Especilidade:Ortopedia</center></h1>
+
+
+	<div id='calendar'></div>
+
+</body>
+</html>
